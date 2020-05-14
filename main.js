@@ -1,17 +1,18 @@
-var base = 1 ;
-var totalXp= null;
+var base = 1;
+var totalXp = null;
 var maxChallengeRatings = [];
 var monstersXp = []
 var monstersCR = []
 var monsterData = null;
 var encounterMonsters = [];
 var monstersNeedPics = [];
-var tBody =null;
+var newArray = [];
+var tBody = null;
 var modal = null;
 var statblockSection = document.querySelector('.statBlockSection');
 var pcCount = document.getElementById('pcCount')
 var averageLvl = document.getElementById('averageLvl');
-var difficulty=document.getElementById('difficulty');
+var difficulty = document.getElementById('difficulty');
 var submitButton = document.getElementById('submitButton');
 var challengeRatings = {
   '0': 10,
@@ -45,76 +46,76 @@ var challengeRatings = {
 }
 var cR0 = [
   'awakened-shrub', 'baboon', 'badger', 'bat', 'cat', 'commoner', 'crab',
-'deer', 'eagle', 'frog' , 'giant-fire-beetle', 'goat', 'hawk', 'homunculus', 'hyena',
-'jackal', 'lemure', 'lizard', 'octopus', 'owl', 'quipper', 'rat',
-'raven', 'scorpion', 'sea-horse', 'shrieker', 'spider', 'vulture', 'weasel'
+  'deer', 'eagle', 'frog', 'giant-fire-beetle', 'goat', 'hawk', 'homunculus', 'hyena',
+  'jackal', 'lemure', 'lizard', 'octopus', 'owl', 'quipper', 'rat',
+  'raven', 'scorpion', 'sea-horse', 'shrieker', 'spider', 'vulture', 'weasel'
 ];
-var cREigth=[
+var cREigth = [
   'bandit', 'blood-hawk', 'camel', 'cultist', 'flying-snake', 'giant-crab',
-'giant-rat', 'giant-weasel', 'guard', 'kobold', 'mastiff', 'merfolk','mule',
-'noble', 'poisonous-snake', 'pony', 'stirge','tribal-warrior',
+  'giant-rat', 'giant-weasel', 'guard', 'kobold', 'mastiff', 'merfolk', 'mule',
+  'noble', 'poisonous-snake', 'pony', 'stirge', 'tribal-warrior',
 ];
-var cRQuarter=[
+var cRQuarter = [
   'acolyte', 'axe-beak', 'blink-dog', 'boar', 'constrictor-snake', 'draft-horse',
-'dretch', 'drow', 'elk', 'flying-sword', 'giant-badger', 'giant-bat', 'giant-centipede',
-'giant-frog','giant-lizard', 'giant-owl', 'giant-poisonous-snake', 'giant-wolf-spider',
-'goblin', 'grimlock', 'panther', 'pseudodragon', 'riding-horse','skeleton', 'sprite',
-'steam-mephit', 'swarm-of-bats', 'swarm-of-rats', 'swarm-of-ravens',
-'violet-fungus', 'wolf', 'zombie'
+  'dretch', 'drow', 'elk', 'flying-sword', 'giant-badger', 'giant-bat', 'giant-centipede',
+  'giant-frog', 'giant-lizard', 'giant-owl', 'giant-poisonous-snake', 'giant-wolf-spider',
+  'goblin', 'grimlock', 'panther', 'pseudodragon', 'riding-horse', 'skeleton', 'sprite',
+  'steam-mephit', 'swarm-of-bats', 'swarm-of-rats', 'swarm-of-ravens',
+  'violet-fungus', 'wolf', 'zombie'
 ]
-var cRHalf=[
+var cRHalf = [
   'ape', 'black-bear', 'cockatrice', 'crocodile', 'darkmantle', 'deep-gnome', 'giant-goat',
-'giant-sea-horse', 'giant-wasp', 'gnoll', 'gray-ooze', 'hobgoblin', 'ice-mephit', 'lizardfolk',
-'magma-mephit', 'magmin', 'orc', 'reef-shark', 'rust-monster', 'sahuagin', 'satyr', 'scout',
-'shadow', 'swarm-of-insects', 'thug', 'warhorse', 'warhorse-skeleton', 'worg'
+  'giant-sea-horse', 'giant-wasp', 'gnoll', 'gray-ooze', 'hobgoblin', 'ice-mephit', 'lizardfolk',
+  'magma-mephit', 'magmin', 'orc', 'reef-shark', 'rust-monster', 'sahuagin', 'satyr', 'scout',
+  'shadow', 'swarm-of-insects', 'thug', 'warhorse', 'warhorse-skeleton', 'worg'
 ]
-var cR1=[
+var cR1 = [
   'animated-armor', 'brass-dragon-wyrmling', 'brown-bear', 'bugbear', 'copper-dragon-wyrmling',
-'death-dog', 'dire-wolf', 'dryad', 'duergar', 'ghoul', 'giant-eagle', 'giant-hyena',
-'giant-octopus', 'giant-spider', 'giant-toad', 'giant-vulture', 'harpy', 'hippogriff',
-'imp', 'lion', 'quasit', 'specter', 'spy', 'swarm-of-quippers', 'tiger'
+  'death-dog', 'dire-wolf', 'dryad', 'duergar', 'ghoul', 'giant-eagle', 'giant-hyena',
+  'giant-octopus', 'giant-spider', 'giant-toad', 'giant-vulture', 'harpy', 'hippogriff',
+  'imp', 'lion', 'quasit', 'specter', 'spy', 'swarm-of-quippers', 'tiger'
 ]
-var cR2=[
+var cR2 = [
   'ankheg', 'awakened-tree', 'azer', 'bandit-captain', 'berserker', 'black-dragon-wyrmling',
-'bronze-dragon-wyrmling', 'centaur', 'cult-fanatic', 'druid', 'ettercap', 'gargoyle',
-'gelatinous-cube', 'ghast', 'giant-boar',  'giant-constrictor-snake', 'giant-elk',
-'gibbering-mouther', 'green-dragon-wyrmling', 'grick', 'griffon', 'hunter-shark',
-'merrow', 'mimic', 'minotaur-skeleton', 'ochre-jelly', 'ogre', 'ogre-zombie', 'pegasus',
-'plesiosaurus', 'polar-bear', 'priest', 'rhinoceros', 'rug-of-smothering', 'saber-toothed-tiger',
-'sea-hag', 'silver-dragon-wyrmling', 'swarm-of-poisonous-snakes', 'wererat', 'white-dragon-wyrmling'
+  'bronze-dragon-wyrmling', 'centaur', 'cult-fanatic', 'druid', 'ettercap', 'gargoyle',
+  'gelatinous-cube', 'ghast', 'giant-boar', 'giant-constrictor-snake', 'giant-elk',
+  'gibbering-mouther', 'green-dragon-wyrmling', 'grick', 'griffon', 'hunter-shark',
+  'merrow', 'mimic', 'minotaur-skeleton', 'ochre-jelly', 'ogre', 'ogre-zombie', 'pegasus',
+  'plesiosaurus', 'polar-bear', 'priest', 'rhinoceros', 'rug-of-smothering', 'saber-toothed-tiger',
+  'sea-hag', 'silver-dragon-wyrmling', 'swarm-of-poisonous-snakes', 'wererat', 'white-dragon-wyrmling'
 ]
-var cR3=[
+var cR3 = [
   'basilisk', 'bearded-devil', 'blue-dragon-wyrmling', 'doppelganger', 'giant-scorpion',
-'gold-dragon-wyrmling', 'green-hag', 'hell-hound', 'killer-whale', 'kKnight', 'manticore',
-'minotaur', 'mummy', 'nightmare', 'owlbear', 'phase-spider', 'spectator', 'veteran',
-'werewolf', 'wight', 'winter-wolf'
+  'gold-dragon-wyrmling', 'green-hag', 'hell-hound', 'killer-whale', 'kKnight', 'manticore',
+  'minotaur', 'mummy', 'nightmare', 'owlbear', 'phase-spider', 'spectator', 'veteran',
+  'werewolf', 'wight', 'winter-wolf'
 ]
 var cR4 = [
   'black-pudding', 'chuul', 'couatl', 'elephant', 'ettin', 'ghost', 'lamia', 'red-dragon-wyrmling',
-'sea-hag', 'wereboar', 'weretiger'
+  'sea-hag', 'wereboar', 'weretiger'
 ]
 var cR5 = [
   'air-elemental', 'barbed-devil', 'bulette', 'earth-elemental', 'fire-elemental',
-'flesh-golem', 'giant-crocodile', 'giant-shark', 'gladiator', 'gorgon', 'green-hag',
-'half-red-dragon-veteran', 'hill-giant', 'night-hag', 'otyugh', 'roper', 'salamander',
-'shambling-mound', 'triceratops', 'troll', 'unicorn', 'vampire-spawn', 'water-elemental',
-'werebear', 'wraith', 'xorn'
+  'flesh-golem', 'giant-crocodile', 'giant-shark', 'gladiator', 'gorgon', 'green-hag',
+  'half-red-dragon-veteran', 'hill-giant', 'night-hag', 'otyugh', 'roper', 'salamander',
+  'shambling-mound', 'triceratops', 'troll', 'unicorn', 'vampire-spawn', 'water-elemental',
+  'werebear', 'wraith', 'xorn'
 ]
 var cR6 = [
   'chimera', 'drider', 'invisible-stalker', 'mage', 'mammoth', 'medusa', 'vrock', 'wyvern',
-'young-brass-dragon', 'young-white-dragon'
+  'young-brass-dragon', 'young-white-dragon'
 ]
 var cR7 = [
   'giant-ape', 'night-hag', 'oni', 'shield-guardian', 'stone-giant', 'young-black-dragon',
-'young-copper-dragon'
+  'young-copper-dragon'
 ]
 var cR8 = [
   'assassin', 'chain-devil', 'cloaker', 'frost-giant', 'hezrou', 'hydra', 'spirit-naga',
-'tyrannosaurus-rex', 'young-bronze-dragon', 'young-green-dragon'
+  'tyrannosaurus-rex', 'young-bronze-dragon', 'young-green-dragon'
 ]
 var cR9 = [
   'bone-devil', 'clay-golem', 'cloud-giant', 'fire-giant', 'glabrezu', 'treant',
-'young-blue-dragon', 'young-silver-dragon'
+  'young-blue-dragon', 'young-silver-dragon'
 ]
 var cR10 = [
   'aboleth', 'deva', 'guardian-naga', 'stone-golem', 'young-gold-dragon', 'young-red-dragon'
@@ -136,7 +137,7 @@ var cR15 = [
 ]
 var cR16 = [
   'adult-blue-dragon', 'adult-silver-dragon', 'iron-golem', 'marilith', 'mummy-lord',
-'planetar'
+  'planetar'
 ]
 var cR17 = [
   'adult-gold-dragon', 'adult-red-dragon', 'androsphinx', 'dragon-turtle'
@@ -165,7 +166,7 @@ var cR30 = [
 var allPics = null;
 
 
-submitButton.addEventListener('click',handleSubmitClick);
+submitButton.addEventListener('click', handleSubmitClick);
 window.addEventListener('DOMContentLoaded', getMonsterList);
 
 
@@ -173,7 +174,6 @@ window.addEventListener('DOMContentLoaded', getMonsterList);
 //   allPics = data;
 //   var currentMonsterStatBlock =  null;
 //   console.log(encounterMonsters);
-//   console.log(monstersNeedPics)
 //   console.log(data.data.images.length)
 //   for (var i =0; i< monstersNeedPics.length;i++){
 //     console.log("I have made it to the first loop")
@@ -202,16 +202,15 @@ function getMonsterPicsError(error) {
 function getMonsterPicsSuccess(data) {
   allPics = data;
   var currentMonsterStatBlock = null;
-  console.log(encounterMonsters);
-  console.log(monstersNeedPics)
-  console.log(data.data.images.length)
+  newArray = encounterMonsters
+  console.log("encountrerM", encounterMonsters,"newA", newArray, "monsterneedpic", monstersNeedPics)
+  convertEncounterMonsters();
+  console.log("encountrerM", encounterMonsters, "newA", newArray, "monsterneedpic", monstersNeedPics)
   for (var i = 0; i < monstersNeedPics.length; i++) {
-    console.log("I have made it to the first loop")
     for (var ii = 0; ii < data.data.images.length; ii++) {
       if (monstersNeedPics[i] === data.data.images[ii].description) {
-        console.log(data.data.images[ii].description, data.data.images[ii].link);
         for (var iii = 0; iii < encounterMonsters.length; iii++) {
-          currentMonsterStatBlock = document.querySelector('div.' + encounterMonsters[iii]);
+          currentMonsterStatBlock = document.querySelector(`div.${encounterMonsters[iii]}`);
           var imageBox = document.createElement('div');
           var img = document.createElement("img");
           img.src = "" + data.data.images[ii].link;
@@ -227,11 +226,34 @@ function getMonsterPicsSuccess(data) {
   }
 }
 
-function getMonsterStats(){
-  for (var i = 0;i<encounterMonsters.length;i++){
+function capitalLetter(str) {
+  str = str.split(" ");
+  for (var i = 0, x = str.length; i < x; i++) {
+    str[i] = str[i][0].toUpperCase() + str[i].substr(1);
+  }
+  str = str.join(" ");
+  return str;
+}
+
+function loopThroughstring(string) {
+  var res = string.replace("-", ' ')
+  string = capitalLetter(res);
+
+  return string;
+
+}
+function convertEncounterMonsters() {
+  for (var i = 0; i < encounterMonsters.length; i++) {
+    monstersNeedPics[i] = loopThroughstring(encounterMonsters[i]);
+  }
+  return newArray;
+}
+
+function getMonsterStats() {
+  for (var i = 0; i < encounterMonsters.length; i++) {
     $.ajax({
       method: "GET",
-      url: "http://www.dnd5eapi.co/api/monsters/"+encounterMonsters[i],
+      url: "http://www.dnd5eapi.co/api/monsters/" + encounterMonsters[i],
       data: "none",
       success: handleGetStatsSuccess,
       error: handleGetStatsError,
@@ -240,10 +262,10 @@ function getMonsterStats(){
 
 }
 
-function handleGetStatsError(error){
+function handleGetStatsError(error) {
   console.error(error);
 }
-function handleGetStatsSuccess(data){
+function handleGetStatsSuccess(data) {
   var statBlock = document.createElement('div')
   var head = document.createElement('div');
   var hitPointsBox = document.createElement('div');
@@ -258,41 +280,40 @@ function handleGetStatsSuccess(data){
   statBlock.classList.add("modal");
 
 
-  monstersNeedPics.push(data.name);
 
 
   var tableName = document.createElement('td');
   var tableCR = document.createElement('td');
-  var newRow =document.createElement('tr');
+  var newRow = document.createElement('tr');
   tBody = document.getElementById("tBody");
-  tableName.textContent=data.name;
-  tableCR.textContent =" "+ data.challenge_rating;
+  tableName.textContent = data.name;
+  tableCR.textContent = " " + data.challenge_rating;
   tableName.classList.add(data.index);
-  tableCR.classList.add("table"+data.challenge_rating);
-  newRow.append(tableName,tableCR);
+  tableCR.classList.add("table" + data.challenge_rating);
+  newRow.append(tableName, tableCR);
   tBody.append(newRow);
   tableName.addEventListener('click', openStatBlock)
   console.log(data.challenge_rating);
 
 
 
-  for(var key in data){
+  for (var key in data) {
 
 
 
-    switch(key){
+    switch (key) {
       case 'actions':
-        for(var ai = 0;ai<data.actions.length;ai++){
+        for (var ai = 0; ai < data.actions.length; ai++) {
           var act = document.createElement('h4');
           var actD = document.createElement('p');
-          act.textContent += ' '+data.actions[ai].name+' ';
+          act.textContent += ' ' + data.actions[ai].name + ' ';
           actD.textContent += ' ' + data.actions[ai].desc + ' ';
-          actions.append(act, actD )
+          actions.append(act, actD)
         }
         break;
       case 'alignment':
         var alignment = document.createElement('p');
-        alignment.textContent =' '+data.alignment + ' ';
+        alignment.textContent = ' ' + data.alignment + ' ';
         break;
       case 'armor_class':
         var aC = document.createElement('p');
@@ -369,18 +390,18 @@ function handleGetStatsSuccess(data){
         }
         break;
       case 'condition_immunities':
-        if(data.condition_immunities.length !== 0){
+        if (data.condition_immunities.length !== 0) {
           var conditionImmunities = document.createElement('p');
           conditionImmunities.textContent = "Condition Immunities: ";
         }
-        for(var cii = 0; cii<data.condition_immunities.length;cii++){
+        for (var cii = 0; cii < data.condition_immunities.length; cii++) {
           conditionImmunities.textContent += ' ' + data.condition_immunities[cii].name + ' ';
           proficiencies.append(conditionImmunities);
         }
         break;
       case 'constitution':
         var con = document.createElement('p');
-        con.textContent= "CON: "
+        con.textContent = "CON: "
         switch (data.constitution) {
           case 1:
             con.textContent += "1 -5 "
@@ -445,17 +466,17 @@ function handleGetStatsSuccess(data){
         }
         break;
       case 'damage_immunities':
-        if(data.damage_immunities.length !==0){
+        if (data.damage_immunities.length !== 0) {
           var damageImmunities = document.createElement('p');
           damageImmunities.textContent += "Damage Immunities: ";
         }
-        for(var dii = 0 ;dii<data.damage_immunities.length;dii++ ){
+        for (var dii = 0; dii < data.damage_immunities.length; dii++) {
           damageImmunities.textContent += ' ' + data.damage_immunities[dii] + ' ';
           proficiencies.append(damageImmunities);
         }
         break;
       case 'damage_resistances':
-        if(data.damage_resistances.length !==0){
+        if (data.damage_resistances.length !== 0) {
           var damageResistances = document.createElement('p');
           damageResistances.textContent += "Damage resistances:";
         }
@@ -465,7 +486,7 @@ function handleGetStatsSuccess(data){
         }
         break;
       case 'damage_vulnerabilities':
-        if(data.damage_vulnerabilities.length !==0){
+        if (data.damage_vulnerabilities.length !== 0) {
           var damageVulnerabilities = document.createElement('p');
           damageVulnerabilities.textContent += "Gamage Vulnerabilities:"
         }
@@ -542,7 +563,7 @@ function handleGetStatsSuccess(data){
         break;
       case 'hit_dice':
         var hitDice = document.createElement('p');
-        hitDice.textContent = "Hit Dice("+data.hit_dice+")";
+        hitDice.textContent = "Hit Dice(" + data.hit_dice + ")";
         break;
       case 'hit_points':
         var hP = document.createElement('p');
@@ -621,11 +642,11 @@ function handleGetStatsSuccess(data){
         name.textContent = data.name;
         break;
       case 'proficiencies':
-        for(var pi =0;pi<data.proficiencies.length;pi++){
-          if(data.proficiencies.length === 0){
+        for (var pi = 0; pi < data.proficiencies.length; pi++) {
+          if (data.proficiencies.length === 0) {
             break;
           }
-          if (data.proficiencies[pi].name === "Saving Throw: STR" || data.proficiencies[pi].name === "Saving Throw: DEX" || data.proficiencies[pi].name === "Saving Throw: CON" || data.proficiencies[pi].name === "Saving Throw: INT" || data.proficiencies[pi].name === "Saving Throw: WIS" || data.proficiencies[pi].name === "Saving Throw: CHA"){
+          if (data.proficiencies[pi].name === "Saving Throw: STR" || data.proficiencies[pi].name === "Saving Throw: DEX" || data.proficiencies[pi].name === "Saving Throw: CON" || data.proficiencies[pi].name === "Saving Throw: INT" || data.proficiencies[pi].name === "Saving Throw: WIS" || data.proficiencies[pi].name === "Saving Throw: CHA") {
             var savingThrows = document.createElement('p');
             savingThrows.textContent = 'Saving Throws: '
             switch (data.proficiencies[pi].name) {
@@ -647,19 +668,19 @@ function handleGetStatsSuccess(data){
                 break;
               case "Saving Throw: WIS":
                 savingThrows.textContent += "WiS ";
-                savingThrows.textContent += "+" + data.proficiencies[pi].value +' ';
+                savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Saving Throw: CHA":
                 savingThrows.textContent += "CHA ";
                 savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
             }
-        } else{
-          var skills = document.createElement('p');
-          skills.textContent += "Skills: ";
-            switch (data.proficiencies[pi].name){
+          } else {
+            var skills = document.createElement('p');
+            skills.textContent += "Skills: ";
+            switch (data.proficiencies[pi].name) {
               case "Skill: Deception":
-                skills.textContent+=" Deception ";
+                skills.textContent += " Deception ";
                 skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Intimidation":
@@ -738,8 +759,8 @@ function handleGetStatsSuccess(data){
       case 'senses':
         var senses = document.createElement('p');
         senses.textContent = "Senses: "
-        for(var senseKey in data.senses){
-          senses.textContent += ' '+senseKey;
+        for (var senseKey in data.senses) {
+          senses.textContent += ' ' + senseKey;
           senses.textContent += ' ' + data.senses[senseKey] + ' ';
         }
         proficiencies.append(senses);
@@ -749,31 +770,31 @@ function handleGetStatsSuccess(data){
         size.textContent = data.size + ' ';
         break;
       case 'special_abilities':
-        if (data.special_abilities.length !== 0){
+        if (data.special_abilities.length !== 0) {
           var specialAbilities = document.createElement('p');
-          for (var sai =0; sai< data.special_abilities.length;sai++){
-            specialAbilities.textContent +=  ' ' + data.special_abilities[sai].name + ' ' + data.special_abilities[sai].desc;
-            }
+          for (var sai = 0; sai < data.special_abilities.length; sai++) {
+            specialAbilities.textContent += ' ' + data.special_abilities[sai].name + ' ' + data.special_abilities[sai].desc;
+          }
           sAbilities.append(specialAbilities);
         }
         break;
       case 'speed':
         var speed = document.createElement('p')
-        speed.textContent+= "Speed: "
-        for (var speedKey in data.speed){
-          switch(speedKey){
+        speed.textContent += "Speed: "
+        for (var speedKey in data.speed) {
+          switch (speedKey) {
             case 'walk':
               speed.textContent += data.speed[speedKey] + ' ';
               break;
             case 'climb':
               speed.textContent += speedKey + " " + data.speed[speedKey] + ' ';
               break;
-            case'swim':
+            case 'swim':
               speed.textContent += speedKey + " " + data.speed[speedKey] + ' ';
               break;
             case 'fly':
               speed.textContent += speedKey + " " + data.speed[speedKey] + ' ';
-            break;
+              break;
           }
         }
         break;
@@ -844,7 +865,7 @@ function handleGetStatsSuccess(data){
         }
         break;
       case 'subtype':
-        if(data.subtype!==null){
+        if (data.subtype !== null) {
           var subType = document.createElement('p');
           subType.textContent = data.subtype + ' ';
           head.append(subType)
@@ -940,15 +961,18 @@ function handleGetStatsSuccess(data){
   statblockSection.append(statBlock)
   getMonsterPics();
 }
-function openStatBlock(e){
-
-  document.querySelector('div.'+e.target.classList).classList.remove("hidden");
+function openStatBlock(e) {
+  var allStatBlocks = document.querySelectorAll('.statBlock')
+  for (var i=0; i<allStatBlocks.length;i++){
+    allStatBlocks[i].classList.add('hidden');
+  }
+  document.querySelector('div.' + e.target.classList).classList.remove("hidden");
 
 }
-function getEncounter(){
-  encounterMonsters=[];
-  for (var i =0; i< monstersCR.length; i++){
-    switch(monstersCR[i]){
+function getEncounter() {
+  encounterMonsters = [];
+  for (var i = 0; i < monstersCR.length; i++) {
+    switch (monstersCR[i]) {
       case '0':
         shuffle(cR0);
         encounterMonsters.push(cR0.pop());
@@ -1074,14 +1098,14 @@ function getMonsterList() {
   })
 }
 function handleMonsterListsuccess(data) {
-  monsterData =data;
+  monsterData = data;
 }
 function handleMonsterListError(error) {
   console.error(error);
 }
-function handleSubmitClick(e){
+function handleSubmitClick(e) {
   e.preventDefault();
-  statblockSection.innerHTML='';
+  statblockSection.innerHTML = '';
   if (tBody !== null) {
     tBody.innerHTML = '';
   }
@@ -1092,7 +1116,7 @@ function handleSubmitClick(e){
 
 
 }
-function getTotalXp(){
+function getTotalXp() {
   // average level X number of PCs X difficulty level
   switch (averageLvl.value) {
     case "1":
@@ -1162,36 +1186,36 @@ function possiblemonsters(totalXp, maxMonsters) {
   maxChallengeRatings = [];
   monstersXp = [];
   monstersCR = [];
-  for(var key in challengeRatings) {
-    if(challengeRatings[key] < totalXp) {
+  for (var key in challengeRatings) {
+    if (challengeRatings[key] < totalXp) {
       maxChallengeRatings.push(key)
     }
   }
   shuffle(maxChallengeRatings);
-  for(var i =0; i<maxChallengeRatings.length;i++){
+  for (var i = 0; i < maxChallengeRatings.length; i++) {
     var value = challengeRatings[maxChallengeRatings[i]];
-    if(value<=totalXp){
+    if (value <= totalXp) {
       totalXp -= value;
       monstersXp.push(value);
       maxMonsters--;
-      if(maxMonsters===0&&totalXp>200){
-        var lowestXp=160000;
-        for (var a=0;a<monstersXp.length;a++){
-          if(monstersXp[a]<lowestXp){
-            lowestXp=monstersXp[a];
+      if (maxMonsters === 0 && totalXp > 200) {
+        var lowestXp = 160000;
+        for (var a = 0; a < monstersXp.length; a++) {
+          if (monstersXp[a] < lowestXp) {
+            lowestXp = monstersXp[a];
           }
         }
       }
     }
   }
-  for(var int =0; int <monstersXp.length;int++){
-    for(var prop in challengeRatings){
-      if (monstersXp[int]===challengeRatings[prop]){
+  for (var int = 0; int < monstersXp.length; int++) {
+    for (var prop in challengeRatings) {
+      if (monstersXp[int] === challengeRatings[prop]) {
         monstersCR.push(prop)
       }
     }
   }
-  console.log('maxChallengeRating:',maxChallengeRatings,'monstersXp:' , monstersXp,'monstersCR', monstersCR);
+  console.log('maxChallengeRating:', maxChallengeRatings, 'monstersXp:', monstersXp, 'monstersCR', monstersCR);
   // randomize the array of max challenge ratings
   // loop through max challenge ratings
   // find value of that key
@@ -1203,13 +1227,13 @@ function possiblemonsters(totalXp, maxMonsters) {
   // if total xp does not have enough to grab another challenge end loop
   // return possible monsters
 }
-function shuffle(array){
+function shuffle(array) {
   var currentIndex = array.length
   var tempValue = null;
-  var randomIndex =null;
-  while (0 !== currentIndex){
+  var randomIndex = null;
+  while (0 !== currentIndex) {
 
-    randomIndex= Math.floor(Math.random()* currentIndex);
+    randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex -= 1;
 
     tempValue = array[currentIndex];
