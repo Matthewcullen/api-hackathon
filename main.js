@@ -5,6 +5,9 @@ var monstersXp = []
 var monstersCR = []
 var monsterData = null;
 var encounterMonsters = [];
+var monstersNeedPics = [];
+var tBody =null;
+var modal = null;
 var statblockSection = document.querySelector('.statBlockSection');
 var pcCount = document.getElementById('pcCount')
 var averageLvl = document.getElementById('averageLvl');
@@ -159,11 +162,70 @@ var cR24 = [
 var cR30 = [
   'tarrasque'
 ]
-
+var allPics = null;
 
 
 submitButton.addEventListener('click',handleSubmitClick);
 window.addEventListener('DOMContentLoaded', getMonsterList);
+
+
+// setTimeout( function getMonsterPicsSuccess(data) {
+//   allPics = data;
+//   var currentMonsterStatBlock =  null;
+//   console.log(encounterMonsters);
+//   console.log(monstersNeedPics)
+//   console.log(data.data.images.length)
+//   for (var i =0; i< monstersNeedPics.length;i++){
+//     console.log("I have made it to the first loop")
+//     for(var ii = 0; ii< data.data.images.length;ii++){
+//       if (monstersNeedPics[i]===data.data.images[ii].description){
+//         console.log(data.data.images[ii].description, data.data.images[ii].link);
+//         for(var iii = 0; iii < encounterMonsters.length;iii++){
+//             currentMonsterStatBlock = document.querySelector('.'+encounterMonsters[iii]);
+//             var imageBox = document.createElement('div');
+//             var img = document.createElement("img");
+//             img.src = ""+data.data.images[ii].link;
+//             imageBox.append(img);
+//             currentMonsterStatBlock.append(imageBox);
+//             encounterMonsters.splice([iii], 1);
+//             monstersNeedPics.splice([i],1);
+//             console.log(encounterMonsters, monstersNeedPics)
+
+//         }
+//       }
+//     }
+//   }
+// },3000);
+function getMonsterPicsError(error) {
+  console.error(error)
+}
+function getMonsterPicsSuccess(data) {
+  allPics = data;
+  var currentMonsterStatBlock = null;
+  console.log(encounterMonsters);
+  console.log(monstersNeedPics)
+  console.log(data.data.images.length)
+  for (var i = 0; i < monstersNeedPics.length; i++) {
+    console.log("I have made it to the first loop")
+    for (var ii = 0; ii < data.data.images.length; ii++) {
+      if (monstersNeedPics[i] === data.data.images[ii].description) {
+        console.log(data.data.images[ii].description, data.data.images[ii].link);
+        for (var iii = 0; iii < encounterMonsters.length; iii++) {
+          currentMonsterStatBlock = document.querySelector('div.' + encounterMonsters[iii]);
+          var imageBox = document.createElement('div');
+          var img = document.createElement("img");
+          img.src = "" + data.data.images[ii].link;
+          imageBox.append(img);
+          currentMonsterStatBlock.append(imageBox);
+          encounterMonsters.splice([iii], 1);
+          monstersNeedPics.splice([i], 1);
+          console.log(encounterMonsters, monstersNeedPics)
+
+        }
+      }
+    }
+  }
+}
 
 function getMonsterStats(){
   for (var i = 0;i<encounterMonsters.length;i++){
@@ -177,22 +239,10 @@ function getMonsterStats(){
   }
 
 }
-// function handleGetStatsSuccess(data){
-//   fillStatBlock(data);
-// }
+
 function handleGetStatsError(error){
   console.error(error);
 }
-// function makeEmptyStatBlock(data){
-//   var statBlock = document.createElement('div')
-//   var head = document.createElement('div');
-//   var hitPointsBox = document.createElement('div');
-//   var stats = document.createElement('div');
-//   var proficiencies = document.createElement('div')
-//   var actions = document.createElement('div');
-//   statBlock.classList.add(''+data.index)
-//   statblockSection.append(statBlock)
-// }
 function handleGetStatsSuccess(data){
   var statBlock = document.createElement('div')
   var head = document.createElement('div');
@@ -201,103 +251,130 @@ function handleGetStatsSuccess(data){
   var proficiencies = document.createElement('div')
   var sAbilities = document.createElement('div')
   var actions = document.createElement('div');
+  var actiontitle = document.createElement('h3');
+  actiontitle.textContent = "Actions: "
+  actions.append(actiontitle);
+  statBlock.classList.add("hidden");
+  statBlock.classList.add("modal");
+
+
+  monstersNeedPics.push(data.name);
+
+
+  var tableName = document.createElement('td');
+  var tableCR = document.createElement('td');
+  var newRow =document.createElement('tr');
+  tBody = document.getElementById("tBody");
+  tableName.textContent=data.name;
+  tableCR.textContent =" "+ data.challenge_rating;
+  tableName.classList.add(data.index);
+  tableCR.classList.add("table"+data.challenge_rating);
+  newRow.append(tableName,tableCR);
+  tBody.append(newRow);
+  tableName.addEventListener('click', openStatBlock)
+  console.log(data.challenge_rating);
+
+
 
   for(var key in data){
+
+
+
     switch(key){
       case 'actions':
         for(var ai = 0;ai<data.actions.length;ai++){
           var act = document.createElement('h4');
           var actD = document.createElement('p');
-          act.textContent += ' '+data.actions[ai].name;
-          actD.textContent += ' '+data.actions[ai].desc;
+          act.textContent += ' '+data.actions[ai].name+' ';
+          actD.textContent += ' ' + data.actions[ai].desc + ' ';
           actions.append(act, actD )
         }
         break;
       case 'alignment':
         var alignment = document.createElement('p');
-        alignment.textContent = data.alignment;
+        alignment.textContent =' '+data.alignment + ' ';
         break;
       case 'armor_class':
         var aC = document.createElement('p');
-        aC.textContent = "AC:"+ data.armor_class;
+        aC.textContent = "AC: " + data.armor_class + ' ';
         break;
       case 'challenge_rating':
         var challenge = document.createElement('p');
-        challenge.textContent = "Challenge: "+ data.challenge_rating;
+        challenge.textContent = "Challenge: " + data.challenge_rating + ' ';
         break;
       case 'charisma':
         var cha = document.createElement('p');
         cha.textContent = "CHA: ";
         switch (data.charisma) {
           case 1:
-            cha.textContent += "1 -5"
+            cha.textContent += "1 -5 "
             break;
           case 2:
-            cha.textContent += "2 -4"
+            cha.textContent += "2 -4 "
             break;
           case 3:
-            cha.textContent += "3 -4"
+            cha.textContent += "3 -4 "
             break;
           case 4:
-            cha.textContent += "4 -3"
+            cha.textContent += "4 -3 "
             break;
           case 5:
-            cha.textContent += "5 -3"
+            cha.textContent += "5 -3 "
             break;
           case 6:
-            cha.textContent += "6 -2"
+            cha.textContent += "6 -2 "
             break;
           case 7:
-            cha.textContent += "7 -2"
+            cha.textContent += "7 -2 "
             break;
           case 8:
-            cha.textContent += "8 -1"
+            cha.textContent += "8 -1 "
             break;
           case 9:
-            cha.textContent += "9 -1"
+            cha.textContent += "9 -1 "
             break;
           case 10:
-            cha.textContent += "10 0"
+            cha.textContent += "10 0 "
             break;
           case 11:
-            cha.textContent += "11 0"
+            cha.textContent += "11 0 "
             break;
           case 12:
-            cha.textContent += "12 +1"
+            cha.textContent += "12 +1 "
             break;
           case 13:
-            cha.textContent += "13 +1"
+            cha.textContent += "13 +1 "
             break;
           case 14:
-            cha.textContent += "14 +2"
+            cha.textContent += "14 +2 "
             break;
           case 15:
-            cha.textContent += "15 +2"
+            cha.textContent += "15 +2 "
             break;
           case 16:
-            cha.textContent += "16 +3"
+            cha.textContent += "16 +3 "
             break;
           case 17:
-            cha.textContent += "17 +3"
+            cha.textContent += "17 +3 "
             break;
           case 18:
-            cha.textContent += "18 +4"
+            cha.textContent += "18 +4 "
             break;
           case 19:
-            cha.textContent += "19 +4"
+            cha.textContent += "19 +4 "
             break;
           case 20:
-            cha.textContent += "20 +5"
+            cha.textContent += "20 +5 "
             break;
         }
         break;
       case 'condition_immunities':
         if(data.condition_immunities.length !== 0){
           var conditionImmunities = document.createElement('p');
-          conditionImmunities.textContent = "Condition Immunities:";
+          conditionImmunities.textContent = "Condition Immunities: ";
         }
         for(var cii = 0; cii<data.condition_immunities.length;cii++){
-          conditionImmunities.textContent +=' '+data.condition_immunities[cii].name;
+          conditionImmunities.textContent += ' ' + data.condition_immunities[cii].name + ' ';
           proficiencies.append(conditionImmunities);
         }
         break;
@@ -306,74 +383,74 @@ function handleGetStatsSuccess(data){
         con.textContent= "CON: "
         switch (data.constitution) {
           case 1:
-            con.textContent += "1 -5"
+            con.textContent += "1 -5 "
             break;
           case 2:
-            con.textContent += "2 -4"
+            con.textContent += "2 -4 "
             break;
           case 3:
-            con.textContent += "3 -4"
+            con.textContent += "3 -4 "
             break;
           case 4:
-            con.textContent += "4 -3"
+            con.textContent += "4 -3 "
             break;
           case 5:
-            con.textContent += "5 -3"
+            con.textContent += "5 -3 "
             break;
           case 6:
-            con.textContent += "6 -2"
+            con.textContent += "6 -2 "
             break;
           case 7:
-            con.textContent += "7 -2"
+            con.textContent += "7 -2 "
             break;
           case 8:
-            con.textContent += "8 -1"
+            con.textContent += "8 -1 "
             break;
           case 9:
-            con.textContent += "9 -1"
+            con.textContent += "9 -1 "
             break;
           case 10:
-            con.textContent += "10 0"
+            con.textContent += "10 0 "
             break;
           case 11:
-            con.textContent += "11 0"
+            con.textContent += "11 0 "
             break;
           case 12:
-            con.textContent += "12 +1"
+            con.textContent += "12 +1 "
             break;
           case 13:
-            con.textContent += "13 +1"
+            con.textContent += "13 +1 "
             break;
           case 14:
-            con.textContent += "14 +2"
+            con.textContent += "14 +2 "
             break;
           case 15:
-            con.textContent += "15 +2"
+            con.textContent += "15 +2 "
             break;
           case 16:
-            con.textContent += "16 +3"
+            con.textContent += "16 +3 "
             break;
           case 17:
-            con.textContent += "17 +3"
+            con.textContent += "17 +3 "
             break;
           case 18:
-            con.textContent += "18 +4"
+            con.textContent += "18 +4 "
             break;
           case 19:
-            con.textContent += "19 +4"
+            con.textContent += "19 +4 "
             break;
           case 20:
-            con.textContent += "20 +5"
+            con.textContent += "20 +5 "
             break;
         }
         break;
       case 'damage_immunities':
         if(data.damage_immunities.length !==0){
           var damageImmunities = document.createElement('p');
-          damageImmunities.textContent += "Damage Immunities";
+          damageImmunities.textContent += "Damage Immunities: ";
         }
         for(var dii = 0 ;dii<data.damage_immunities.length;dii++ ){
-          damageImmunities.textContent += ' ' + data.damage_immunities[dii].name;
+          damageImmunities.textContent += ' ' + data.damage_immunities[dii] + ' ';
           proficiencies.append(damageImmunities);
         }
         break;
@@ -383,7 +460,7 @@ function handleGetStatsSuccess(data){
           damageResistances.textContent += "Damage resistances:";
         }
         for (var dri = 0; dri < data.damage_resistances.length; dri++) {
-          damageResistances.textContent += ' ' + data.damage_resistances[dri].name;
+          damageResistances.textContent += ' ' + data.damage_resistances[dri] + ' ';
           proficiencies.append(damageResistances);
         }
         break;
@@ -393,7 +470,7 @@ function handleGetStatsSuccess(data){
           damageVulnerabilities.textContent += "Gamage Vulnerabilities:"
         }
         for (var dvi = 0; dvi < data.damage_vulnerabilities.length; dvi++) {
-          damageVulnerabilities.textContent += ' ' + data.damage_vulnerabilities[dii].name;
+          damageVulnerabilities.textContent += ' ' + data.damage_vulnerabilities[dii] + ' ';
           proficiencies.append(damageVulnerabilities);
         }
         break;
@@ -402,144 +479,141 @@ function handleGetStatsSuccess(data){
         dex.textContent = "DEX: "
         switch (data.dexterity) {
           case 1:
-            dex.textContent += "1 -5"
+            dex.textContent += "1 -5 "
             break;
           case 2:
-            dex.textContent += "2 -4"
+            dex.textContent += "2 -4 "
             break;
           case 3:
-            dex.textContent += "3 -4"
+            dex.textContent += "3 -4 "
             break;
           case 4:
-            dex.textContent += "4 -3"
+            dex.textContent += "4 -3 "
             break;
           case 5:
-            dex.textContent += "5 -3"
+            dex.textContent += "5 -3 "
             break;
           case 6:
-            dex.textContent += "6 -2"
+            dex.textContent += "6 -2 "
             break;
           case 7:
-            dex.textContent += "7 -2"
+            dex.textContent += "7 -2 "
             break;
           case 8:
-            dex.textContent += "8 -1"
+            dex.textContent += "8 -1 "
             break;
           case 9:
-            dex.textContent += "9 -1"
+            dex.textContent += "9 -1 "
             break;
           case 10:
-            dex.textContent += "10 0"
+            dex.textContent += "10 0 "
             break;
           case 11:
-            dex.textContent += "11 0"
+            dex.textContent += "11 0 "
             break;
           case 12:
-            dex.textContent += "12 +1"
+            dex.textContent += "12 +1 "
             break;
           case 13:
-            dex.textContent += "13 +1"
+            dex.textContent += "13 +1 "
             break;
           case 14:
-            dex.textContent += "14 +2"
+            dex.textContent += "14 +2 "
             break;
           case 15:
-            dex.textContent += "15 +2"
+            dex.textContent += "15 +2 "
             break;
           case 16:
-            dex.textContent += "16 +3"
+            dex.textContent += "16 +3 "
             break;
           case 17:
-            dex.textContent += "17 +3"
+            dex.textContent += "17 +3 "
             break;
           case 18:
-            dex.textContent += "18 +4"
+            dex.textContent += "18 +4 "
             break;
           case 19:
-            dex.textContent += "19 +4"
+            dex.textContent += "19 +4 "
             break;
           case 20:
-            dex.textContent += "20 +5"
+            dex.textContent += "20 +5 "
             break;
         }
         break;
       case 'hit_dice':
         var hitDice = document.createElement('p');
-        hitDice.textContent = "Hit Dice("+data.hit_dice;+")";
+        hitDice.textContent = "Hit Dice("+data.hit_dice+")";
         break;
       case 'hit_points':
         var hP = document.createElement('p');
-        hP.textContent = "HP:"+ data.hit_points;
+        hP.textContent = "HP:" + data.hit_points + ' ';
         break;
       case 'intelligence':
         var int = document.createElement('p');
         int.textContent = "INT: ";
         switch (data.intelligence) {
           case 1:
-            int.textContent += "1 -5"
+            int.textContent += "1 -5 "
             break;
           case 2:
-            int.textContent += "2 -4"
+            int.textContent += "2 -4 "
             break;
           case 3:
-            int.textContent += "3 -4"
+            int.textContent += "3 -4 "
             break;
           case 4:
-            int.textContent += "4 -3"
+            int.textContent += "4 -3 "
             break;
           case 5:
-            int.textContent += "5 -3"
+            int.textContent += "5 -3 "
             break;
           case 6:
-            int.textContent += "6 -2"
+            int.textContent += "6 -2 "
             break;
           case 7:
-            int.textContent += "7 -2"
+            int.textContent += "7 -2 "
             break;
           case 8:
-            int.textContent += "8 -1"
-            break;
-          case 9:
-            int.textContent += "9 -1"
+            int.textContent += "8 -1 "
             break;
           case 10:
-            int.textContent += "10 0"
+            int.textContent += "10 0 "
             break;
           case 11:
-            int.textContent += "11 0"
+            int.textContent += "11 0 "
             break;
           case 12:
-            int.textContent += "12 +1"
+            int.textContent += "12 +1 "
             break;
           case 13:
-            int.textContent += "13 +1"
+            int.textContent += "13 +1 "
             break;
           case 14:
-            int.textContent += "14 +2"
+            int.textContent += "14 +2 "
             break;
           case 15:
-            int.textContent += "15 +2"
+            int.textContent += "15 +2 "
             break;
           case 16:
-            int.textContent += "16 +3"
+            int.textContent += "16 +3 "
             break;
           case 17:
-            int.textContent += "17 +3"
+            int.textContent += "17 +3 "
             break;
           case 18:
-            int.textContent += "18 +4"
+            int.textContent += "18 +4 "
             break;
           case 19:
-            int.textContent += "19 +4"
+            int.textContent += "19 +4 "
             break;
           case 20:
-            int.textContent += "20 +5"
+            int.textContent += "20 +5 "
             break;
         }
         break;
       case 'languages':
         var languages = document.createElement('p');
-        languages.textContent = data.languages;
+        languages.textContent = ' ' + data.languages + ' ';
         proficiencies.append(languages);
         break;
       case 'name':
@@ -556,28 +630,28 @@ function handleGetStatsSuccess(data){
             savingThrows.textContent = 'Saving Throws: '
             switch (data.proficiencies[pi].name) {
               case "Saving Throw: STR":
-                savingThrows.textContent += "STR";
-                savingThrows.textContent += "+"+data.proficiencies[pi].value;
+                savingThrows.textContent += "STR ";
+                savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Saving Throw: DEX":
-                savingThrows.textContent += "DEX";
-                savingThrows.textContent +="+"+data.proficiencies[pi].value;
+                savingThrows.textContent += "DEX ";
+                savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Saving Throw: CON":
-                savingThrows.textContent += "CON";
-                savingThrows.textContent += "+"+data.proficiencies[pi].value;
+                savingThrows.textContent += "CON ";
+                savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Saving Throw: INT":
-                savingThrows.textContent += "INT";
-                savingThrows.textContent += "+"+data.proficiencies[pi].value;
+                savingThrows.textContent += "INT ";
+                savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Saving Throw: WIS":
-                savingThrows.textContent += "WiS";
-                savingThrows.textContent +="+"+ data.proficiencies[pi].value;
+                savingThrows.textContent += "WiS ";
+                savingThrows.textContent += "+" + data.proficiencies[pi].value +' ';
                 break;
               case "Saving Throw: CHA":
-                savingThrows.textContent += "CHA";
-                savingThrows.textContent +="+"+ data.proficiencies[pi].value;
+                savingThrows.textContent += "CHA ";
+                savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
             }
         } else{
@@ -585,76 +659,76 @@ function handleGetStatsSuccess(data){
           skills.textContent += "Skills: ";
             switch (data.proficiencies[pi].name){
               case "Skill: Deception":
-                skills.textContent+=" Deception";
-                skills.textContent += "+" +data.proficiencies[pi].value;
+                skills.textContent+=" Deception ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Intimidation":
-                skills.textContent += " Intimidation";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += " Intimidation ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Performance":
-                skills.textContent += " Performance";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += " Performance ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Persuasion":
-                skills.textContent += " Persuasion";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += " Persuasion ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Animal Handling":
-                skills.textContent += " Anamal Handling";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += " Anamal Handling ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Insight":
-                skills.textContent += "Insight";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Insight ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Medicine":
-                skills.textContent += "Medicine";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Medicine ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Perception":
-                skills.textContent += "Perception";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Perception ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Survival":
-                skills.textContent += "Survival";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Survival ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Arcana":
-                skills.textContent += "Arcana";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Arcana ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: History":
-                skills.textContent += "History";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "History ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Investigation":
-                skills.textContent += "Investigation";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Investigation ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Nature":
-                skills.textContent += "Nature";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Nature ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Religion":
                 skills.textContent += "Religion";
                 skills.textContent += "+" + data.proficiencies[pi].value;
                 break;
               case "Skill: Athletics":
-                skills.textContent += "Athletics";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Athletics ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Acrobatics":
-                skills.textContent += "Acrobatics";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Acrobatics ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Sleight of Hand":
-                skills.textContent += "Sleight of Hand";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Sleight of Hand ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
               case "Skill: Stealth":
-                skills.textContent += "Stealth";
-                skills.textContent += "+" + data.proficiencies[pi].value;
+                skills.textContent += "Stealth ";
+                skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
             }
           }
@@ -666,19 +740,19 @@ function handleGetStatsSuccess(data){
         senses.textContent = "Senses: "
         for(var senseKey in data.senses){
           senses.textContent += ' '+senseKey;
-          senses.textContent += ' '+data.senses[senseKey];
+          senses.textContent += ' ' + data.senses[senseKey] + ' ';
         }
         proficiencies.append(senses);
         break;
       case 'size':
         var size = document.createElement('p');
-        size.textContent = data.size;
+        size.textContent = data.size + ' ';
         break;
       case 'special_abilities':
         if (data.special_abilities.length !== 0){
           var specialAbilities = document.createElement('p');
           for (var sai =0; sai< data.special_abilities.length;sai++){
-            specialAbilities.textContent += '' + data.special_abilities[sai].name + ' ' + data.special_abilities[sai].desc;
+            specialAbilities.textContent +=  ' ' + data.special_abilities[sai].name + ' ' + data.special_abilities[sai].desc;
             }
           sAbilities.append(specialAbilities);
         }
@@ -689,16 +763,16 @@ function handleGetStatsSuccess(data){
         for (var speedKey in data.speed){
           switch(speedKey){
             case 'walk':
-              speed.textContent+= data.speed[speedKey];
+              speed.textContent += data.speed[speedKey] + ' ';
               break;
             case 'climb':
-              speed.textContent += speedKey+" " + data.speed[speedKey];
+              speed.textContent += speedKey + " " + data.speed[speedKey] + ' ';
               break;
             case'swim':
-              speed.textContent += speedKey+" " + data.speed[speedKey];
+              speed.textContent += speedKey + " " + data.speed[speedKey] + ' ';
               break;
             case 'fly':
-              speed.textContent += speedKey+" " + data.speed[speedKey];
+              speed.textContent += speedKey + " " + data.speed[speedKey] + ' ';
             break;
           }
         }
@@ -708,71 +782,71 @@ function handleGetStatsSuccess(data){
         str.textContent = "STR: ";
         switch (data.strength) {
           case 1:
-            str.textContent += "1 -5"
+            str.textContent += "1 -5 "
             break;
           case 2:
-            str.textContent += "2 -4"
+            str.textContent += "2 -4 "
             break;
           case 3:
-            str.textContent += "3 -4"
+            str.textContent += "3 -4 "
             break;
           case 4:
-            str.textContent += "4 -3"
+            str.textContent += "4 -3 "
             break;
           case 5:
-            str.textContent += "5 -3"
+            str.textContent += "5 -3 "
             break;
           case 6:
-            str.textContent += "6 -2"
+            str.textContent += "6 -2 "
             break;
           case 7:
-            str.textContent += "7 -2"
+            str.textContent += "7 -2 "
             break;
           case 8:
-            str.textContent += "8 -1"
+            str.textContent += "8 -1 "
             break;
           case 9:
-            str.textContent += "9 -1"
+            str.textContent += "9 -1 "
             break;
           case 10:
-            str.textContent += "10 0"
+            str.textContent += "10 0 "
             break;
           case 11:
-            str.textContent += "11 0"
+            str.textContent += "11 0 "
             break;
           case 12:
-            str.textContent += "12 +1"
+            str.textContent += "12 +1 "
             break;
           case 13:
-            str.textContent += "13 +1"
+            str.textContent += "13 +1 "
             break;
           case 14:
-            str.textContent += "14 +2"
+            str.textContent += "14 +2 "
             break;
           case 15:
-            str.textContent += "15 +2"
+            str.textContent += "15 +2 "
             break;
           case 16:
-            str.textContent += "16 +3"
+            str.textContent += "16 +3 "
             break;
           case 17:
-            str.textContent += "17 +3"
+            str.textContent += "17 +3 "
             break;
           case 18:
-            str.textContent += "18 +4"
+            str.textContent += "18 +4 "
             break;
           case 19:
-            str.textContent += "19 +4"
+            str.textContent += "19 +4 "
             break;
           case 20:
-            str.textContent += "20 +5"
+            str.textContent += "20 +5 "
             break;
         }
         break;
       case 'subtype':
-        if(!data.subtype){
+        if(data.subtype!==null){
           var subType = document.createElement('p');
-          subType.textContent = data.subtype;
+          subType.textContent = data.subtype + ' ';
           head.append(subType)
         }
         break;
@@ -785,64 +859,64 @@ function handleGetStatsSuccess(data){
         wis.textContent = "WIS: ";
         switch (data.wisdom) {
           case 1:
-            wis.textContent += "1 -5"
+            wis.textContent += "1 -5 "
             break;
           case 2:
-            wis.textContent += "2 -4"
+            wis.textContent += "2 -4 "
             break;
           case 3:
-            wis.textContent += "3 -4"
+            wis.textContent += "3 -4 "
             break;
           case 4:
-            wis.textContent += "4 -3"
+            wis.textContent += "4 -3 "
             break;
           case 5:
-            wis.textContent += "5 -3"
+            wis.textContent += "5 -3 "
             break;
           case 6:
-            wis.textContent += "6 -2"
+            wis.textContent += "6 -2 "
             break;
           case 7:
-            wis.textContent += "7 -2"
+            wis.textContent += "7 -2 "
             break;
           case 8:
-            wis.textContent += "8 -1"
+            wis.textContent += "8 -1 "
             break;
           case 9:
-            wis.textContent += "9 -1"
+            wis.textContent += "9 -1 "
             break;
           case 10:
-            wis.textContent += "10 0"
+            wis.textContent += "10 0 "
             break;
           case 11:
-            wis.textContent += "11 0"
+            wis.textContent += "11 0 "
             break;
           case 12:
-            wis.textContent += "12 +1"
+            wis.textContent += "12 +1 "
             break;
           case 13:
-            wis.textContent += "13 +1"
+            wis.textContent += "13 +1 "
             break;
           case 14:
-            wis.textContent += "14 +2"
+            wis.textContent += "14 +2 "
             break;
           case 15:
-            wis.textContent += "15 +2"
+            wis.textContent += "15 +2 "
             break;
           case 16:
-            wis.textContent += "16 +3"
+            wis.textContent += "16 +3 "
             break;
           case 17:
-            wis.textContent += "17 +3"
+            wis.textContent += "17 +3 "
             break;
           case 18:
-            wis.textContent += "18 +4"
+            wis.textContent += "18 +4 "
             break;
           case 19:
-            wis.textContent += "19 +4"
+            wis.textContent += "19 +4 "
             break;
           case 20:
-            wis.textContent += "20 +5"
+            wis.textContent += "20 +5 "
             break;
         }
         break;
@@ -864,6 +938,12 @@ function handleGetStatsSuccess(data){
   proficiencies.append(languages, challenge);
   statBlock.append(head, hitPointsBox, stats, proficiencies, sAbilities, actions);
   statblockSection.append(statBlock)
+  getMonsterPics();
+}
+function openStatBlock(e){
+
+  document.querySelector('div.'+e.target.classList).classList.remove("hidden");
+
 }
 function getEncounter(){
   encounterMonsters=[];
@@ -983,7 +1063,6 @@ function getEncounter(){
         break;
     }
   }
-  console.log(encounterMonsters);
 }
 function getMonsterList() {
   $.ajax({
@@ -1002,10 +1081,15 @@ function handleMonsterListError(error) {
 }
 function handleSubmitClick(e){
   e.preventDefault();
+  statblockSection.innerHTML='';
+  if (tBody !== null) {
+    tBody.innerHTML = '';
+  }
   getTotalXp();
   possiblemonsters(totalXp, 8);
   getEncounter();
   getMonsterStats();
+
 
 }
 function getTotalXp(){
