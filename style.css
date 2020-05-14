@@ -1,0 +1,88 @@
+body{
+    background-image: url(images/&\ RED.png);
+  background-position: top;
+  background-size: contain;
+  background-repeat: repeat;
+  ;
+  height: 95v;h
+}
+
+form{
+  background-color: black;
+  color: red;
+  height: 10rem;
+  width:35%;
+}
+
+main{
+
+  width: 100%;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+aside{
+  background-color: black;
+  width: 35%;
+  border: 5px solid red;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+p{
+  margin: .5rem;
+}
+
+table{
+  font-size: x-large;
+  background-color: black;
+  color: white;
+}
+th, td{
+  border: 2px solid red;
+}
+
+.statBlock{
+  position: absolute;
+  background-color: beige;
+  margin:auto;
+  width: 60%;
+}
+.head{
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom:5px double red;
+}
+.hitPointBox{
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom:5px double red;
+}
+.stats{
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom:5px double red;
+}
+.proficiencies{
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom:5px double red;
+}
+.sAbilities{
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom:5px double red;
+}
+.actions{
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom:5px double red;
+}
+
+
+
+
+
+
+
+.hidden{
+  display: none;
+}
