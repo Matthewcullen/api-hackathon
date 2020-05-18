@@ -1,4 +1,4 @@
-function getMonsterPics() {
+function getMonsterPics(monster) {
   $.ajax({
     method: "GET",
     url: "https://api.imgur.com/3/gallery/JweWCpf/?showViral=true&mature=true",
@@ -6,7 +6,7 @@ function getMonsterPics() {
     headers: {
       Authorization: "Client-ID ff01923a8e2bd51"
     },
-    success: getMonsterPicsSuccess,
+    success: function(data){getMonsterPicsSuccess(data, monster)},
     error: getMonsterPicsError,
   })
 }

@@ -14,6 +14,7 @@ var pcCount = document.getElementById('pcCount')
 var averageLvl = document.getElementById('averageLvl');
 var difficulty = document.getElementById('difficulty');
 var submitButton = document.getElementById('submitButton');
+var wasStatsBlockClicked = [];
 var challengeRatings = {
   '0': 10,
   '1/8': 25,
@@ -71,7 +72,7 @@ var cRHalf = [
 ]
 var cR1 = [
   'animated-armor', 'brass-dragon-wyrmling', 'brown-bear', 'bugbear', 'copper-dragon-wyrmling',
-  'death-dog', 'dire-wolf', 'dryad', 'duergar', 'ghoul', 'giant-eagle', 'giant-hyena',
+  'dire-wolf', 'dryad', 'duergar', 'ghoul', 'giant-eagle', 'giant-hyena',
   'giant-octopus', 'giant-spider', 'giant-toad', 'giant-vulture', 'harpy', 'hippogriff',
   'imp', 'lion', 'quasit', 'specter', 'spy', 'swarm-of-quippers', 'tiger'
 ]
@@ -169,58 +170,24 @@ var allPics = null;
 submitButton.addEventListener('click', handleSubmitClick);
 window.addEventListener('DOMContentLoaded', getMonsterList);
 
-
-// setTimeout( function getMonsterPicsSuccess(data) {
-//   allPics = data;
-//   var currentMonsterStatBlock =  null;
-//   console.log(encounterMonsters);
-//   console.log(data.data.images.length)
-//   for (var i =0; i< monstersNeedPics.length;i++){
-//     console.log("I have made it to the first loop")
-//     for(var ii = 0; ii< data.data.images.length;ii++){
-//       if (monstersNeedPics[i]===data.data.images[ii].description){
-//         console.log(data.data.images[ii].description, data.data.images[ii].link);
-//         for(var iii = 0; iii < encounterMonsters.length;iii++){
-//             currentMonsterStatBlock = document.querySelector('.'+encounterMonsters[iii]);
-//             var imageBox = document.createElement('div');
-//             var img = document.createElement("img");
-//             img.src = ""+data.data.images[ii].link;
-//             imageBox.append(img);
-//             currentMonsterStatBlock.append(imageBox);
-//             encounterMonsters.splice([iii], 1);
-//             monstersNeedPics.splice([i],1);
-//             console.log(encounterMonsters, monstersNeedPics)
-
-//         }
-//       }
-//     }
-//   }
-// },3000);
 function getMonsterPicsError(error) {
   console.error(error)
 }
-function getMonsterPicsSuccess(data) {
+function getMonsterPicsSuccess(data, monster) {
   allPics = data;
   var currentMonsterStatBlock = null;
   newArray = encounterMonsters
-  console.log("encountrerM", encounterMonsters,"newA", newArray, "monsterneedpic", monstersNeedPics)
   convertEncounterMonsters();
-  console.log("encountrerM", encounterMonsters, "newA", newArray, "monsterneedpic", monstersNeedPics)
-  for (var i = 0; i < monstersNeedPics.length; i++) {
-    for (var ii = 0; ii < data.data.images.length; ii++) {
-      if (monstersNeedPics[i] === data.data.images[ii].description) {
-        for (var iii = 0; iii < encounterMonsters.length; iii++) {
-          currentMonsterStatBlock = document.querySelector(`div.${encounterMonsters[iii]}`);
-          var imageBox = document.createElement('div');
-          var img = document.createElement("img");
-          img.src = "" + data.data.images[ii].link;
-          imageBox.append(img);
-          currentMonsterStatBlock.append(imageBox);
-          encounterMonsters.splice([iii], 1);
-          monstersNeedPics.splice([i], 1);
-          console.log(encounterMonsters, monstersNeedPics)
-
-        }
+  for (let i = 0; i < allPics.data.images.length; i++) {
+    if (allPics.data.images[i].description === convertEncounterMonstersParm(monster[0])) {
+      currentMonsterStatBlock = document.querySelector(`div.${convertEncounterPicturesMonsters(allPics.data.images[i].description, "b")}`);
+      if(!currentMonsterStatBlock.classList.contains("has-image")){
+        currentMonsterStatBlock.classList.add("has-image");
+        var imageBox = document.createElement('div');
+        var img = document.createElement("img");
+        img.src = "" + data.data.images[i].link;
+        imageBox.append(img);
+        currentMonsterStatBlock.append(imageBox);
       }
     }
   }
@@ -235,18 +202,33 @@ function capitalLetter(str) {
   return str;
 }
 
-function loopThroughstring(string) {
-  var res = string.replace("-", ' ')
-  string = capitalLetter(res);
+function loopThroughstring(string, dir) {
+  if(dir && dir === "f"){
+    string = string.replace(/-/g, ' ')
+    string = capitalLetter(string);
+  } else if(dir && dir === "b"){
+    string = string.replace(/ /g, "-")
+    string = string.toLowerCase();
+  }
 
   return string;
-
 }
 function convertEncounterMonsters() {
+  monstersNeedPics = [];
   for (var i = 0; i < encounterMonsters.length; i++) {
-    monstersNeedPics[i] = loopThroughstring(encounterMonsters[i]);
+    monstersNeedPics[i] = loopThroughstring(encounterMonsters[i], "f");
   }
   return newArray;
+}
+
+function convertEncounterMonstersParm(str) {
+  str = loopThroughstring(str, "f");
+  return str;
+}
+
+function convertEncounterPicturesMonsters(str) {
+  str = loopThroughstring(str, "b");
+  return str;
 }
 
 function getMonsterStats() {
@@ -259,7 +241,7 @@ function getMonsterStats() {
       error: handleGetStatsError,
     })
   }
-
+  // this.getMonsterPics();
 }
 
 function handleGetStatsError(error) {
@@ -295,12 +277,11 @@ function handleGetStatsSuccess(data) {
   tableName.addEventListener('click', openStatBlock)
   console.log(data.challenge_rating);
 
+  console.log(`handleGetStatsSuccess data: `, data);
 
+  let sign;
 
   for (var key in data) {
-
-
-
     switch (key) {
       case 'actions':
         for (var ai = 0; ai < data.actions.length; ai++) {
@@ -326,68 +307,8 @@ function handleGetStatsSuccess(data) {
       case 'charisma':
         var cha = document.createElement('p');
         cha.textContent = "CHA: ";
-        switch (data.charisma) {
-          case 1:
-            cha.textContent += "1 -5 "
-            break;
-          case 2:
-            cha.textContent += "2 -4 "
-            break;
-          case 3:
-            cha.textContent += "3 -4 "
-            break;
-          case 4:
-            cha.textContent += "4 -3 "
-            break;
-          case 5:
-            cha.textContent += "5 -3 "
-            break;
-          case 6:
-            cha.textContent += "6 -2 "
-            break;
-          case 7:
-            cha.textContent += "7 -2 "
-            break;
-          case 8:
-            cha.textContent += "8 -1 "
-            break;
-          case 9:
-            cha.textContent += "9 -1 "
-            break;
-          case 10:
-            cha.textContent += "10 0 "
-            break;
-          case 11:
-            cha.textContent += "11 0 "
-            break;
-          case 12:
-            cha.textContent += "12 +1 "
-            break;
-          case 13:
-            cha.textContent += "13 +1 "
-            break;
-          case 14:
-            cha.textContent += "14 +2 "
-            break;
-          case 15:
-            cha.textContent += "15 +2 "
-            break;
-          case 16:
-            cha.textContent += "16 +3 "
-            break;
-          case 17:
-            cha.textContent += "17 +3 "
-            break;
-          case 18:
-            cha.textContent += "18 +4 "
-            break;
-          case 19:
-            cha.textContent += "19 +4 "
-            break;
-          case 20:
-            cha.textContent += "20 +5 "
-            break;
-        }
+        sign = data[key]>9 ? "+": "";
+        cha.textContent += `${data[key]} ${sign}${Math.floor(data[key] / 2) - 5}`;
         break;
       case 'condition_immunities':
         if (data.condition_immunities.length !== 0) {
@@ -402,68 +323,8 @@ function handleGetStatsSuccess(data) {
       case 'constitution':
         var con = document.createElement('p');
         con.textContent = "CON: "
-        switch (data.constitution) {
-          case 1:
-            con.textContent += "1 -5 "
-            break;
-          case 2:
-            con.textContent += "2 -4 "
-            break;
-          case 3:
-            con.textContent += "3 -4 "
-            break;
-          case 4:
-            con.textContent += "4 -3 "
-            break;
-          case 5:
-            con.textContent += "5 -3 "
-            break;
-          case 6:
-            con.textContent += "6 -2 "
-            break;
-          case 7:
-            con.textContent += "7 -2 "
-            break;
-          case 8:
-            con.textContent += "8 -1 "
-            break;
-          case 9:
-            con.textContent += "9 -1 "
-            break;
-          case 10:
-            con.textContent += "10 0 "
-            break;
-          case 11:
-            con.textContent += "11 0 "
-            break;
-          case 12:
-            con.textContent += "12 +1 "
-            break;
-          case 13:
-            con.textContent += "13 +1 "
-            break;
-          case 14:
-            con.textContent += "14 +2 "
-            break;
-          case 15:
-            con.textContent += "15 +2 "
-            break;
-          case 16:
-            con.textContent += "16 +3 "
-            break;
-          case 17:
-            con.textContent += "17 +3 "
-            break;
-          case 18:
-            con.textContent += "18 +4 "
-            break;
-          case 19:
-            con.textContent += "19 +4 "
-            break;
-          case 20:
-            con.textContent += "20 +5 "
-            break;
-        }
+        sign = data[key] > 9 ? "+" : "";
+        con.textContent += `${data[key]} ${sign}${Math.floor(data[key] / 2) - 5}`;
         break;
       case 'damage_immunities':
         if (data.damage_immunities.length !== 0) {
@@ -498,68 +359,8 @@ function handleGetStatsSuccess(data) {
       case 'dexterity':
         var dex = document.createElement('p');
         dex.textContent = "DEX: "
-        switch (data.dexterity) {
-          case 1:
-            dex.textContent += "1 -5 "
-            break;
-          case 2:
-            dex.textContent += "2 -4 "
-            break;
-          case 3:
-            dex.textContent += "3 -4 "
-            break;
-          case 4:
-            dex.textContent += "4 -3 "
-            break;
-          case 5:
-            dex.textContent += "5 -3 "
-            break;
-          case 6:
-            dex.textContent += "6 -2 "
-            break;
-          case 7:
-            dex.textContent += "7 -2 "
-            break;
-          case 8:
-            dex.textContent += "8 -1 "
-            break;
-          case 9:
-            dex.textContent += "9 -1 "
-            break;
-          case 10:
-            dex.textContent += "10 0 "
-            break;
-          case 11:
-            dex.textContent += "11 0 "
-            break;
-          case 12:
-            dex.textContent += "12 +1 "
-            break;
-          case 13:
-            dex.textContent += "13 +1 "
-            break;
-          case 14:
-            dex.textContent += "14 +2 "
-            break;
-          case 15:
-            dex.textContent += "15 +2 "
-            break;
-          case 16:
-            dex.textContent += "16 +3 "
-            break;
-          case 17:
-            dex.textContent += "17 +3 "
-            break;
-          case 18:
-            dex.textContent += "18 +4 "
-            break;
-          case 19:
-            dex.textContent += "19 +4 "
-            break;
-          case 20:
-            dex.textContent += "20 +5 "
-            break;
-        }
+        sign = data[key] > 9 ? "+" : "";
+        dex.textContent += `${data[key]} ${sign}${Math.floor(data[key] / 2) - 5}`;
         break;
       case 'hit_dice':
         var hitDice = document.createElement('p');
@@ -572,65 +373,8 @@ function handleGetStatsSuccess(data) {
       case 'intelligence':
         var int = document.createElement('p');
         int.textContent = "INT: ";
-        switch (data.intelligence) {
-          case 1:
-            int.textContent += "1 -5 "
-            break;
-          case 2:
-            int.textContent += "2 -4 "
-            break;
-          case 3:
-            int.textContent += "3 -4 "
-            break;
-          case 4:
-            int.textContent += "4 -3 "
-            break;
-          case 5:
-            int.textContent += "5 -3 "
-            break;
-          case 6:
-            int.textContent += "6 -2 "
-            break;
-          case 7:
-            int.textContent += "7 -2 "
-            break;
-          case 8:
-            int.textContent += "8 -1 "
-            break;
-          case 10:
-            int.textContent += "10 0 "
-            break;
-          case 11:
-            int.textContent += "11 0 "
-            break;
-          case 12:
-            int.textContent += "12 +1 "
-            break;
-          case 13:
-            int.textContent += "13 +1 "
-            break;
-          case 14:
-            int.textContent += "14 +2 "
-            break;
-          case 15:
-            int.textContent += "15 +2 "
-            break;
-          case 16:
-            int.textContent += "16 +3 "
-            break;
-          case 17:
-            int.textContent += "17 +3 "
-            break;
-          case 18:
-            int.textContent += "18 +4 "
-            break;
-          case 19:
-            int.textContent += "19 +4 "
-            break;
-          case 20:
-            int.textContent += "20 +5 "
-            break;
-        }
+        sign = data[key] > 9 ? "+" : "";
+        int.textContent += `${data[key]} ${sign}${Math.floor(data[key] / 2) - 5}`;
         break;
       case 'languages':
         var languages = document.createElement('p');
@@ -801,68 +545,8 @@ function handleGetStatsSuccess(data) {
       case 'strength':
         var str = document.createElement('p');
         str.textContent = "STR: ";
-        switch (data.strength) {
-          case 1:
-            str.textContent += "1 -5 "
-            break;
-          case 2:
-            str.textContent += "2 -4 "
-            break;
-          case 3:
-            str.textContent += "3 -4 "
-            break;
-          case 4:
-            str.textContent += "4 -3 "
-            break;
-          case 5:
-            str.textContent += "5 -3 "
-            break;
-          case 6:
-            str.textContent += "6 -2 "
-            break;
-          case 7:
-            str.textContent += "7 -2 "
-            break;
-          case 8:
-            str.textContent += "8 -1 "
-            break;
-          case 9:
-            str.textContent += "9 -1 "
-            break;
-          case 10:
-            str.textContent += "10 0 "
-            break;
-          case 11:
-            str.textContent += "11 0 "
-            break;
-          case 12:
-            str.textContent += "12 +1 "
-            break;
-          case 13:
-            str.textContent += "13 +1 "
-            break;
-          case 14:
-            str.textContent += "14 +2 "
-            break;
-          case 15:
-            str.textContent += "15 +2 "
-            break;
-          case 16:
-            str.textContent += "16 +3 "
-            break;
-          case 17:
-            str.textContent += "17 +3 "
-            break;
-          case 18:
-            str.textContent += "18 +4 "
-            break;
-          case 19:
-            str.textContent += "19 +4 "
-            break;
-          case 20:
-            str.textContent += "20 +5 "
-            break;
-        }
+        sign = data[key] > 9 ? "+" : "";
+        str.textContent += `${data[key]} ${sign}${Math.floor(data[key] / 2) - 5}`;
         break;
       case 'subtype':
         if (data.subtype !== null) {
@@ -878,68 +562,8 @@ function handleGetStatsSuccess(data) {
       case 'wisdom':
         var wis = document.createElement('p');
         wis.textContent = "WIS: ";
-        switch (data.wisdom) {
-          case 1:
-            wis.textContent += "1 -5 "
-            break;
-          case 2:
-            wis.textContent += "2 -4 "
-            break;
-          case 3:
-            wis.textContent += "3 -4 "
-            break;
-          case 4:
-            wis.textContent += "4 -3 "
-            break;
-          case 5:
-            wis.textContent += "5 -3 "
-            break;
-          case 6:
-            wis.textContent += "6 -2 "
-            break;
-          case 7:
-            wis.textContent += "7 -2 "
-            break;
-          case 8:
-            wis.textContent += "8 -1 "
-            break;
-          case 9:
-            wis.textContent += "9 -1 "
-            break;
-          case 10:
-            wis.textContent += "10 0 "
-            break;
-          case 11:
-            wis.textContent += "11 0 "
-            break;
-          case 12:
-            wis.textContent += "12 +1 "
-            break;
-          case 13:
-            wis.textContent += "13 +1 "
-            break;
-          case 14:
-            wis.textContent += "14 +2 "
-            break;
-          case 15:
-            wis.textContent += "15 +2 "
-            break;
-          case 16:
-            wis.textContent += "16 +3 "
-            break;
-          case 17:
-            wis.textContent += "17 +3 "
-            break;
-          case 18:
-            wis.textContent += "18 +4 "
-            break;
-          case 19:
-            wis.textContent += "19 +4 "
-            break;
-          case 20:
-            wis.textContent += "20 +5 "
-            break;
-        }
+        sign = data[key] > 9 ? "+" : "";
+        wis.textContent += `${data[key]} ${sign}${Math.floor(data[key] / 2) - 5}`;
         break;
     }
   }
@@ -959,7 +583,7 @@ function handleGetStatsSuccess(data) {
   proficiencies.append(languages, challenge);
   statBlock.append(head, hitPointsBox, stats, proficiencies, sAbilities, actions);
   statblockSection.append(statBlock)
-  getMonsterPics();
+  // getMonsterPics();
 }
 function openStatBlock(e) {
   var allStatBlocks = document.querySelectorAll('.statBlock')
@@ -968,6 +592,7 @@ function openStatBlock(e) {
   }
   document.querySelector('div.' + e.target.classList).classList.remove("hidden");
 
+  getMonsterPics(e.target.classList);
 }
 function getEncounter() {
   encounterMonsters = [];
@@ -1099,6 +724,7 @@ function getMonsterList() {
 }
 function handleMonsterListsuccess(data) {
   monsterData = data;
+  console.log(`data: `, data);
 }
 function handleMonsterListError(error) {
   console.error(error);
