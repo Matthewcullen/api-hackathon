@@ -165,6 +165,13 @@ var cR30 = [
   'tarrasque'
 ]
 var allPics = null;
+var hazardOptions = [`Enemies have a human family held  captive, save them!`, `Bring the leader back alive!`, `a 2o ft chasm separates you and the enemy`, `heavy fog rolls in you view is lightly obscured`,
+ `these Creatures seem to be controlled by an unknown force`,
+ `Antimagic flora: Magical manifestations can transform the environment, and sometimes trees and moss become impervious to magic. Moss starts to radiate pale white light and trees gain a pale blue grain on the bark.
+Effect--A patch of this flora emanates a 30ft radius aura of counterspell. A creature that ends its turn in the aura loses a random spell slot and any spell casted inside the aura is instantly and successfully counterspelled. After a spell is counterspelled this effect can be identified by an DC 16 Intelligence (Arcana) check. Any type of damage can destroy a patch of Antimagic Flora.`,
+`Chimney Mushroom: Apatch of these mushrooms with small stems and high slender cap resemble a town skyline.
+Effect-- If a patch of Chimney Mushroom is disturbed it releases a thick black cloud of spores that obscures all sight in a 20ft radius area. The area is heavily obscured, and any creature that ends its turn in the area must succeed on a DC 12 Constitution Saving Throw or become Poisoned for 1 hour. The spores least for 10 minutes or until dissipated with magic or mundane means.`
+]
 
 
 submitButton.addEventListener('click', handleSubmitClick);
@@ -191,6 +198,14 @@ function getMonsterPicsSuccess(data, monster) {
       }
     }
   }
+}
+
+function addhazard(){
+  var tableBody = document.querySelector('tbody');
+  var hazard = document.createElement('td');
+  hazardOptions= shuffle(hazardOptions);
+  var randomhazard = hazardOptions.pop()
+  tableBody.append(randomhazard);
 }
 
 function capitalLetter(str) {
@@ -278,9 +293,6 @@ function handleGetStatsSuccess(data) {
   newRow.append(tableName, tableCR);
   tBody.append(newRow);
   tableName.addEventListener('click', openStatBlock)
-  console.log(data.challenge_rating);
-
-  console.log(`handleGetStatsSuccess data: `, data);
 
   let sign;
 
@@ -732,7 +744,6 @@ function getMonsterList() {
 }
 function handleMonsterListsuccess(data) {
   monsterData = data;
-  console.log(`data: `, data);
 }
 function handleMonsterListError(error) {
   console.error(error);
@@ -747,6 +758,7 @@ function handleSubmitClick(e) {
   possiblemonsters(totalXp, 8);
   getEncounter();
   getMonsterStats();
+  addhazard();
 
 
 }
@@ -814,7 +826,6 @@ function getTotalXp() {
       base = 2800
   }
   totalXp = (base * pcCount.value * difficulty.value)
-  console.log(totalXp);
 }
 function possiblemonsters(totalXp, maxMonsters) {
   maxChallengeRatings = [];
@@ -849,17 +860,6 @@ function possiblemonsters(totalXp, maxMonsters) {
       }
     }
   }
-  console.log('maxChallengeRating:', maxChallengeRatings, 'monstersXp:', monstersXp, 'monstersCR', monstersCR);
-  // randomize the array of max challenge ratings
-  // loop through max challenge ratings
-  // find value of that key
-  // subtract that value from the totalxp
-  // once encounter is found create an object with that key and value
-  // push that object into monsters
-  // decrement maxmonsters
-  // if maxmonsters = 0 end loop
-  // if total xp does not have enough to grab another challenge end loop
-  // return possible monsters
 }
 function shuffle(array) {
   var currentIndex = array.length
