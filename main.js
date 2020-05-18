@@ -381,7 +381,7 @@ function handleGetStatsSuccess(data) {
         break;
       case 'languages':
         var languages = document.createElement('p');
-        languages.textContent = ' ' + data.languages + ' ';
+        languages.textContent = ' languages:' + data.languages + ' ';
         proficiencies.append(languages);
         break;
       case 'name':
@@ -397,6 +397,8 @@ function handleGetStatsSuccess(data) {
             var savingThrows = document.createElement('p');
             savingThrows.textContent = 'Saving Throws: '
             switch (data.proficiencies[pi].name) {
+              case "undefined":
+                break;
               case "Saving Throw: STR":
                 savingThrows.textContent += "STR ";
                 savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
@@ -422,6 +424,8 @@ function handleGetStatsSuccess(data) {
                 savingThrows.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
             }
+            proficiencies.append(savingThrows);
+
           } else {
             var skills = document.createElement('p');
             skills.textContent += "Skills: ";
@@ -499,8 +503,8 @@ function handleGetStatsSuccess(data) {
                 skills.textContent += "+" + data.proficiencies[pi].value + ' ';
                 break;
             }
+            proficiencies.append(skills);
           }
-          proficiencies.append(savingThrows, skills);
         }
         break;
       case 'senses':
@@ -514,7 +518,7 @@ function handleGetStatsSuccess(data) {
         break;
       case 'size':
         var size = document.createElement('p');
-        size.textContent = data.size + ' ';
+        size.textContent ='Size:'+data.size + ' ';
         break;
       case 'special_abilities':
         if (data.special_abilities.length !== 0) {
@@ -524,7 +528,6 @@ function handleGetStatsSuccess(data) {
             specialAbilities.textContent += data.special_abilities[sai].name + ' --- ' + data.special_abilities[sai].desc;
             sAbilities.append(specialAbilities);
           }
-
         }
         break;
       case 'speed':
@@ -556,13 +559,13 @@ function handleGetStatsSuccess(data) {
       case 'subtype':
         if (data.subtype !== null) {
           var subType = document.createElement('p');
-          subType.textContent = data.subtype + ' ';
-          head.append(subType)
+          subType.textContent ='Subtype: ' +data.subtype + ' ';
+          type.append(subType)
         }
         break;
       case 'type':
         var type = document.createElement('p');
-        type.textContent = data.type;
+        type.textContent ='type:' +data.type;
         break;
       case 'wisdom':
         var wis = document.createElement('p');
