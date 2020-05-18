@@ -14,6 +14,7 @@ var pcCount = document.getElementById('pcCount')
 var averageLvl = document.getElementById('averageLvl');
 var difficulty = document.getElementById('difficulty');
 var submitButton = document.getElementById('submitButton');
+var wasStatsBlockClicked = [];
 var challengeRatings = {
   '0': 10,
   '1/8': 25,
@@ -172,24 +173,22 @@ window.addEventListener('DOMContentLoaded', getMonsterList);
 function getMonsterPicsError(error) {
   console.error(error)
 }
-function getMonsterPicsSuccess(data) {
+function getMonsterPicsSuccess(data, monster) {
   allPics = data;
   var currentMonsterStatBlock = null;
   newArray = encounterMonsters
   convertEncounterMonsters();
-  let j=0;
-
   for (let i = 0; i < allPics.data.images.length; i++) {
-    if (allPics.data.images[i].description === monstersNeedPics[j]) {
-      console.log(allPics.data.images[i]);
+    if (allPics.data.images[i].description === convertEncounterMonstersParm(monster[0])) {
       currentMonsterStatBlock = document.querySelector(`div.${convertEncounterPicturesMonsters(allPics.data.images[i].description, "b")}`);
-      var imageBox = document.createElement('div');
-      var img = document.createElement("img");
-      img.src = "" + data.data.images[i].link;
-      imageBox.append(img);
-      currentMonsterStatBlock.append(imageBox);
-      j++;
-      i = 0;
+      if(!currentMonsterStatBlock.classList.contains("has-image")){
+        currentMonsterStatBlock.classList.add("has-image");
+        var imageBox = document.createElement('div');
+        var img = document.createElement("img");
+        img.src = "" + data.data.images[i].link;
+        imageBox.append(img);
+        currentMonsterStatBlock.append(imageBox);
+      }
     }
   }
 }
@@ -222,6 +221,11 @@ function convertEncounterMonsters() {
   return newArray;
 }
 
+function convertEncounterMonstersParm(str) {
+  str = loopThroughstring(str, "f");
+  return str;
+}
+
 function convertEncounterPicturesMonsters(str) {
   str = loopThroughstring(str, "b");
   return str;
@@ -237,6 +241,7 @@ function getMonsterStats() {
       error: handleGetStatsError,
     })
   }
+  // this.getMonsterPics();
 }
 
 function handleGetStatsError(error) {
@@ -578,7 +583,7 @@ function handleGetStatsSuccess(data) {
   proficiencies.append(languages, challenge);
   statBlock.append(head, hitPointsBox, stats, proficiencies, sAbilities, actions);
   statblockSection.append(statBlock)
-  getMonsterPics();
+  // getMonsterPics();
 }
 function openStatBlock(e) {
   var allStatBlocks = document.querySelectorAll('.statBlock')
@@ -587,6 +592,7 @@ function openStatBlock(e) {
   }
   document.querySelector('div.' + e.target.classList).classList.remove("hidden");
 
+  getMonsterPics(e.target.classList);
 }
 function getEncounter() {
   encounterMonsters = [];
