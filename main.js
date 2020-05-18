@@ -256,7 +256,10 @@ function handleGetStatsSuccess(data) {
   var sAbilities = document.createElement('div')
   var actions = document.createElement('div');
   var actiontitle = document.createElement('h3');
+  var sAbilitiesTitle = document.createElement('h3');
+  sAbilitiesTitle. textContent = "Speacial Abilities: "
   actiontitle.textContent = "Actions: "
+  sAbilities.append(sAbilitiesTitle);
   actions.append(actiontitle);
   statBlock.classList.add("hidden");
   statBlock.classList.add("modal");
@@ -287,7 +290,7 @@ function handleGetStatsSuccess(data) {
         for (var ai = 0; ai < data.actions.length; ai++) {
           var act = document.createElement('h4');
           var actD = document.createElement('p');
-          act.textContent += ' ' + data.actions[ai].name + ' ';
+          act.textContent += ' ' + data.actions[ai].name + '--';
           actD.textContent += ' ' + data.actions[ai].desc + ' ';
           actions.append(act, actD)
         }
@@ -515,11 +518,13 @@ function handleGetStatsSuccess(data) {
         break;
       case 'special_abilities':
         if (data.special_abilities.length !== 0) {
-          var specialAbilities = document.createElement('p');
           for (var sai = 0; sai < data.special_abilities.length; sai++) {
-            specialAbilities.textContent += ' ' + data.special_abilities[sai].name + ' ' + data.special_abilities[sai].desc;
+            var specialAbilities = document.createElement('p');
+            specialAbilities.classList.add("sAbility")
+            specialAbilities.textContent += data.special_abilities[sai].name + ' --- ' + data.special_abilities[sai].desc;
+            sAbilities.append(specialAbilities);
           }
-          sAbilities.append(specialAbilities);
+
         }
         break;
       case 'speed':
