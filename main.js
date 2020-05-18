@@ -169,8 +169,18 @@ var hazardOptions = [`Enemies have a human family held  captive, save them!`, `B
  `these Creatures seem to be controlled by an unknown force`,
  `Antimagic flora: Magical manifestations can transform the environment, and sometimes trees and moss become impervious to magic. Moss starts to radiate pale white light and trees gain a pale blue grain on the bark.
 Effect--A patch of this flora emanates a 30ft radius aura of counterspell. A creature that ends its turn in the aura loses a random spell slot and any spell casted inside the aura is instantly and successfully counterspelled. After a spell is counterspelled this effect can be identified by an DC 16 Intelligence (Arcana) check. Any type of damage can destroy a patch of Antimagic Flora.`,
-`Chimney Mushroom: Apatch of these mushrooms with small stems and high slender cap resemble a town skyline.
-Effect-- If a patch of Chimney Mushroom is disturbed it releases a thick black cloud of spores that obscures all sight in a 20ft radius area. The area is heavily obscured, and any creature that ends its turn in the area must succeed on a DC 12 Constitution Saving Throw or become Poisoned for 1 hour. The spores least for 10 minutes or until dissipated with magic or mundane means.`
+`Chimney Mushroom: Apatch of these mushrooms with small stems and high slender cap resemble a town skyline.Effect-- If a patch of Chimney Mushroom is disturbed it releases a thick black cloud of spores that obscures all sight in a 20ft radius area. The area is heavily obscured, and any creature that ends its turn in the area must succeed on a DC 12 Constitution Saving Throw or become Poisoned for 1 hour. The spores least for 10 minutes or until dissipated with magic or mundane means.`,``,``,``,``,
+`Patch of difficult terrain:  a Patch of this battlefield is difficult terrain snow/sand/uneven ground/thick undergrowth`,
+`Fools weed: this weed flowers in every season,  except winter. When flowering ita has a tough, grooved, hairy stem, about 3 feet tall. The flowers are about an inch in diameter and bright blue.
+   Effect--When flowering, it exudes an invisible, pungent hallucinogenic gas in an area of 20ft radius. A creature ending its turn in the gas area must succeed on a DC 12 Wisdom Saving Throw or suffer the effects of a random illusion spell.
+Sighting--A creature can notice this exotic plant with a DC 15 Passive Perception check and identify this hazard with a successful DC 12 Wisdom (Survival) or Intelligence (Nature) check.`,
+`Planer Shackle Mist: Made by powerful wizards of a lost empire, this magical violet and luminescent mist floats on the ground about 2ft high. Effect--The area is warded against teleportation and planar travel. Sighting--A creature can notice the mist by sight and recognize the hazard with a DC 16 Wisdom (Survival) or Intelligence (Arcana) check.`,
+`Tar Pit: a tar pit is easily recogonizable, but sometimes undergrowth and other obstacles hide the pit. Effect-- A creature that steps in the tar pit falls down and must succeed on a DC 14 Strength(Athletics) check to swim and float.If the check is successful the creature can swim around, otherwise the creature remains in the same spot struggling to stay afloat.If the check fails by 5 or more the creature starts to sink 5ft inside the tar pit.A sinking creature must succeed on a DC 14 Strength(Athletics) check every turn to swim up 5ft.For every failed check the creature sinks for another 5ft.A creature that ends its turn in the tar takes 1d6 fire damage.
+      Sighting-- A creature can notice the hidden pit by smell with a DC 15 Passive Perception check and recognize the hazard with a DC 14 Wisdom(Survival) or Intelligence(Nature) check.`,
+      `Slumber Flora: this exotic, purple grained flora has developed an interesting self-defence mechanism. Slumber Flora constantly emits invisible and odorless gas.
+Effect--A creature can notice the hidden pit by smell with a DC 15 Passive Perception check and recognize the hazard with a DC 14 Wisdom (Survival) or Intelligence (Nature) check.
+Sighting--A creature can notice the flora by sight with a DC 15 Passive Perception check and recognize the hazard with a DC 12 Wisdom (Survival) or Intelligence (Nature) check.`,
+`Before the monsters the Characters find 4 health potions`, `the CHaracters Find a potion of fire Breathing before the fight`
 ]
 
 
@@ -201,11 +211,12 @@ function getMonsterPicsSuccess(data, monster) {
 }
 
 function addhazard(){
-  var tableBody = document.querySelector('tbody');
-  var hazard = document.createElement('td');
+  var bottomRow = document.querySelector('.bottomRow');
+  var hazard = document.createElement('th');
+  hazard.classList.add('hazard');
   hazardOptions= shuffle(hazardOptions);
   var randomhazard = hazardOptions.pop()
-  tableBody.append(randomhazard);
+  bottomRow.append(randomhazard);
 }
 
 function capitalLetter(str) {
@@ -256,6 +267,7 @@ function getMonsterStats() {
       error: handleGetStatsError,
     })
   }
+  addhazard();
   // this.getMonsterPics();
 }
 
@@ -758,7 +770,7 @@ function handleSubmitClick(e) {
   possiblemonsters(totalXp, 8);
   getEncounter();
   getMonsterStats();
-  addhazard();
+  // addhazard();
 
 
 }

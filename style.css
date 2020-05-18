@@ -31,8 +31,10 @@ aside{
 p{
   margin: .5rem;
 }
-
-table{
+.bottomRow{
+  font-size: small;
+}
+thead,tbody{
   font-size: x-large;
   background-color: black;
   color: white;
